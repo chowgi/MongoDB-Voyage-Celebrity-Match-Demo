@@ -36,7 +36,7 @@ def search():
         print("Successfully opened image")
         
         # Get embedding for uploaded image
-        inputs = [["An image of a person", image]]
+        inputs = [[image]]
         print("Getting embedding...")
         result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
         query_embedding = result.embeddings[0]
