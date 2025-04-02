@@ -2,11 +2,20 @@ from flask import Flask, render_template, request, jsonify
 import voyageai
 from PIL import Image
 from pymongo import MongoClient
+import boto3
 import io
 import os
 import numpy as np
 
 app = Flask(__name__)
+
+# Initialize S3 client
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=os.environ['aws_access_key'],
+    aws_secret_access_key=os.environ['aws_secret_key'],
+    region_name="ap-south-1"
+)
 
 # Initialize clients
 vo = voyageai.Client()
