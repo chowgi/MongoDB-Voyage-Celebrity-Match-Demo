@@ -12,20 +12,14 @@ app = Flask(__name__)
 
 def get_image_from_s3(bucket_name, key):
     try:
-        response = s3_client.get_object(Bucket=bucket_name, Key=key)
-        image_data = response['Body'].read()
-        return base64.b64encode(image_data).decode('utf-8')
+        url = f"https://{bucket_name}.s3.ap-south-1.amazonaws.com/{key}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return base64.b64encode(response.content).decode('utf-8')
+        return None
     except Exception as e:
         print(f"Error getting image from S3: {str(e)}")
         return None
-
-# Initialize S3 client
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=os.environ['aws_access_key'],
-    aws_secret_access_key=os.environ['aws_secret_key'],
-    region_name="ap-south-1"
-)
 
 # Initialize clients
 vo = voyageai.Client()
