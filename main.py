@@ -40,7 +40,7 @@ def search():
         {
             "$vectorSearch": {
                 "index": "vector_search",
-                "queryVector": query_embedding.tolist(),
+                "queryVector": query_embedding,
                 "path": "embedding",
                 "numCandidates": 100,
                 "limit": 3
