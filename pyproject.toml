@@ -7,7 +7,9 @@ requires-python = ">=3.11"
 dependencies = [
     "bing-image-downloader>=1.1.2",
     "boto3>=1.37.25",
+    "flask>=3.1.0",
     "google-images-download>=2.8.0",
+    "numpy>=2.2.4",
     "pillow>=11.2.0",
     "pymongo>=4.11.3",
     "replit-object-storage>=1.0.2",
