@@ -14,7 +14,7 @@ def upload_to_s3(image_data, bucket_name, key_name, s3_client):
         print(f"Error uploading to S3: {str(e)}")
         return False
 
-def download_celebrity_images(celebrity_names, num_images=3):
+def download_celebrity_images(celebrity_names, num_images=1):
     # Initialize S3 client
     s3_client = boto3.client(
         's3',
