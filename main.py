@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import voyageai
 from PIL import Image
 from pymongo import MongoClient
-import boto3
+import requests
 import io
 import os
 import numpy as np
