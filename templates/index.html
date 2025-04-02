@@ -134,12 +134,12 @@
             captureButton.style.display = 'none';
             cameraButton.style.display = 'inline-block';
             
-            // Convert base64 to blob for form submission
-            canvas.toBlob((blob) => {
+            // Convert base64 to blob and trigger search
+            canvas.toBlob(async (blob) => {
                 const file = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                document.getElementById('imageInput').files = dataTransfer.files;
+                const formData = new FormData();
+                formData.append('image', file);
+                await performSearch(formData);
             }, 'image/jpeg');
         });
 
@@ -187,27 +187,10 @@
     <div id="results" class="results"></div>
 
     <script>
-        const imageInput = document.getElementById('imageInput');
-        const preview = document.getElementById('preview');
+        const searchForm = document.getElementById('searchForm');
+        const resultsDiv = document.getElementById('results');
 
-        imageInput.addEventListener('change', event => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        document.getElementById('searchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData();
-            const imageFile = document.getElementById('imageInput').files[0];
-            formData.append('image', imageFile);
-
+        async function performSearch(formData) {
             try {
                 const response = await fetch('/search', {
                     method: 'POST',
@@ -217,7 +200,6 @@
                 const data = await response.json();
                 console.log('Search results:', data);
                 
-                const resultsDiv = document.getElementById('results');
                 resultsDiv.innerHTML = data.map(result => `
                     <div class="result-card">
                         <img src="data:image/jpeg;base64,${result.image_data}" alt="${result.name}">
@@ -229,6 +211,14 @@
                 console.error('Error:', error);
                 alert('An error occurred during the search');
             }
+        }
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const imageFile = document.getElementById('imageInput').files[0];
+            formData.append('image', imageFile);
+            await performSearch(formData);
         });
     </script>
 </body>
