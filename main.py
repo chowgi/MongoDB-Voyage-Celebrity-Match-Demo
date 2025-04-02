@@ -46,6 +46,10 @@ def search():
         result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
         query_embedding = result.embeddings[0]
         print(f"Embedding shape: {len(query_embedding)}")
+        print("First 10 values of embedding:", query_embedding[:10])
+        print("Min value:", min(query_embedding))
+        print("Max value:", max(query_embedding))
+        print("Average value:", sum(query_embedding) / len(query_embedding))
 
         # Use MongoDB vector search
         pipeline = [
