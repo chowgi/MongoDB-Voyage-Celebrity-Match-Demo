@@ -199,7 +199,6 @@
                 <input type="file" id="imageInput" accept="image/*" required style="display: none;">
                 <button type="button" class="upload-btn" id="cameraButton">Use Camera</button>
                 <button type="button" class="upload-btn" id="captureButton" style="display:none">Take Photo</button>
-                <button type="submit" class="upload-btn">Search</button>
             </div>
         </form>
         <img id="preview" alt="Preview">
@@ -272,7 +271,7 @@
             }, 'image/jpeg');
         });
 
-        document.getElementById('imageInput').addEventListener('change', event => {
+        document.getElementById('imageInput').addEventListener('change', async event => {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -281,6 +280,10 @@
                     preview.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
+                
+                const formData = new FormData();
+                formData.append('image', file);
+                await performSearch(formData);
             }
         });
 
@@ -310,13 +313,7 @@
             }
         }
 
-        document.getElementById('searchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData();
-            const imageFile = document.getElementById('imageInput').files[0];
-            formData.append('image', imageFile);
-            await performSearch(formData);
-        });
+        
     </script>
 </body>
 </html>
