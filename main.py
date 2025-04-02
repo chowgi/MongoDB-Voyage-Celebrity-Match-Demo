@@ -35,22 +35,33 @@ def search():
     result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
     query_embedding = result.embeddings[0]
     
-    # Find similar celebrities
-    all_celebs = list(collection.find())
-    similarities = []
+    # Use MongoDB vector search
+    pipeline = [
+        {
+            "$vectorSearch": {
+                "index": "vector_search",
+                "queryVector": query_embedding.tolist(),
+                "path": "embedding",
+                "numCandidates": 100,
+                "limit": 3
+            }
+        },
+        {
+            "$project": {
+                "name": 1,
+                "s3_url": 1,
+                "similarity": {"$meta": "vectorSearchScore"}
+            }
+        }
+    ]
     
-    for celeb in all_celebs:
-        if 'embedding' in celeb:
-            similarity = cosine_similarity(query_embedding, celeb['embedding'])
-            similarities.append({
-                'name': celeb['name'],
-                'similarity': float(similarity),
-                's3_url': celeb['s3_url']
-            })
-    
-    # Sort by similarity and get top 3
-    similarities.sort(key=lambda x: x['similarity'], reverse=True)
-    top_3 = similarities[:3]
+    # Execute search and format results
+    results = list(collection.aggregate(pipeline))
+    top_3 = [{
+        'name': doc['name'],
+        'similarity': float(doc['similarity']),
+        's3_url': doc['s3_url']
+    } for doc in results]
     
     return jsonify(top_3)
 
