@@ -41,7 +41,7 @@ def search():
         print("Successfully opened image")
 
         # Get embedding for uploaded image - match format used in vector store
-        inputs = [["An image of a person with name unknown", image]]
+        inputs = [["An image of a Brad Pitt", image]]
         print("Getting embedding...")
         result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
         query_embedding = result.embeddings[0]
