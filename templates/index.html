@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Celebrity Image Search</title>
+    <style>
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .celeb-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        .celeb-card img {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Celebrity Image Search</h1>
+    <form id="searchForm" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="results" class="results"></div>
+
+    <script>
+        document.getElementById('searchForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                const results = await response.json();
+                
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = results.map(celeb => `
+                    <div class="celeb-card">
+                        <img src="${celeb.s3_url}" alt="${celeb.name}">
+                        <h3>${celeb.name}</h3>
+                        <p>Similarity: ${(celeb.similarity * 100).toFixed(2)}%</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+    </script>
+</body>
+</html>
