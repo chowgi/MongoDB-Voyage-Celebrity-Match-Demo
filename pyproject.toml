@@ -5,5 +5,6 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 dependencies = [
+    "bing-image-downloader>=1.1.2",
     "google-images-download>=2.8.0",
 ]

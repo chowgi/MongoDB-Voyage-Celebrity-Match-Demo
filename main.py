@@ -1,25 +1,24 @@
 
-from google_images_download import google_images_download
+from bing_image_downloader import downloader
 import os
+import time
 
 def download_celebrity_images(celebrity_names, num_images=3):
-    response = google_images_download.googleimagesdownload()
-    
     for celebrity in celebrity_names:
         print(f"Downloading {celebrity}...")
         try:
-            # Configure the download
-            arguments = {
-                "keywords": celebrity,
-                "limit": num_images,
-                "format": "jpg",
-                "output_directory": "celebrity_images",
-                "no_directory": False
-            }
-            
-            # Download images
-            response.download(arguments)
+            # Download images using Bing
+            downloader.download(
+                celebrity,
+                limit=num_images,
+                output_dir="celebrity_images",
+                adult_filter_off=False,
+                force_replace=False,
+                timeout=60
+            )
             print(f"Successfully downloaded images for {celebrity}")
+            # Add small delay to avoid rate limiting
+            time.sleep(1)
             
         except Exception as e:
             print(f"Error downloading images for {celebrity}: {str(e)}")
