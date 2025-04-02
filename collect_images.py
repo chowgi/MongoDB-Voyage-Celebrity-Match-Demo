@@ -73,11 +73,10 @@ def download_celebrity_images(celebrity_names, num_images=3):
             print(f"Error processing images for {celebrity}: {str(e)}")
 
 def main():
-    # Load celebrities from CSV file
-    import csv
-    with open('names.csv', 'r') as file:
-        reader = csv.DictReader(file)
-        celebrities = [row['Celebrity Name'] for row in reader]
+    # Load celebrities from text file containing array of strings
+    import json
+    with open('names.txt', 'r') as file:
+        celebrities = json.loads(file.read())
 
     # Create temp directory if it doesn't exist
     if not os.path.exists("temp_images"):
