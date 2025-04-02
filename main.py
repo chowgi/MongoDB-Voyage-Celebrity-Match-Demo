@@ -3,6 +3,7 @@ from bing_image_downloader import downloader
 import os
 import time
 
+
 def download_celebrity_images(celebrity_names, num_images=3):
     for celebrity in celebrity_names:
         print(f"Downloading {celebrity}...")
@@ -59,7 +60,7 @@ def main():
         os.makedirs("celebrity_images")
     
     # Download images for each celebrity
-    download_celebrity_images(celebrities)
+    download_celebrity_images(celebrities[:10])
 
 if __name__ == "__main__":
     main()
