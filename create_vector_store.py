@@ -55,7 +55,7 @@ def process_celebrity_images():
                     # Get embedding using Voyage AI
                     embedding = get_embedding(
                         image_bytes,
-                        model="voyage-01",
+                        model="voyage-multimodal-3",
                         api_key=os.environ['VOYAGE_API_KEY']
                     )
                     
