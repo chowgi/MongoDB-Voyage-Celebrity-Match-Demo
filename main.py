@@ -24,7 +24,24 @@ def download_celebrity_images(celebrity_names, num_images=3):
     )
     bucket_name = 'celeb-images-demo'
 
+    def celebrity_exists(celebrity):
+        try:
+            # List objects with celebrity name prefix
+            response = s3_client.list_objects_v2(
+                Bucket=bucket_name,
+                Prefix=f"{celebrity}/",
+                MaxKeys=1
+            )
+            # If any objects exist with this prefix, the celebrity folder exists
+            return 'Contents' in response
+        except Exception:
+            return False
+
     for celebrity in celebrity_names:
+        if celebrity_exists(celebrity):
+            print(f"Skipping {celebrity} - Images already exist in S3")
+            continue
+            
         print(f"Downloading {celebrity}...")
         try:
             # Use Bing downloader to get image URLs
