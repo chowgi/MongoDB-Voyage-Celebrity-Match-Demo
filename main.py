@@ -16,12 +16,9 @@ collection = db['celebrity_images']
 
 # Verify vector search index exists
 indexes = collection.list_indexes()
-vector_index_exists = any('vector_search' in idx.get('name', '') for idx in indexes)
+vector_index_exists = any('vector_index' in idx.get('name', '') for idx in indexes)
 if not vector_index_exists:
     print("Warning: vector_search index not found in MongoDB collection")
-
-def cosine_similarity(a, b):
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 @app.route('/')
 def home():
@@ -55,7 +52,7 @@ def search():
         pipeline = [
             {
                 "$vectorSearch": {
-                    "index": "vector_search",
+                    "index": "vector_index",
                     "queryVector": query_embedding,
                     "path": "embedding",
                     "numCandidates": 100,
