@@ -1,29 +1,24 @@
 
-from simple_image_download import simple_image_download as simp
+from google_images_download import google_images_download
 import os
 
 def download_celebrity_images(celebrity_names, num_images=3):
-    response = simp.simple_image_download()
-    response.thumbnails = False
+    response = google_images_download.googleimagesdownload()
     
     for celebrity in celebrity_names:
         print(f"Downloading {celebrity}...")
         try:
+            # Configure the download
+            arguments = {
+                "keywords": celebrity,
+                "limit": num_images,
+                "format": "jpg",
+                "output_directory": "celebrity_images",
+                "no_directory": False
+            }
+            
             # Download images
-            images = response.download(celebrity, num_images)
-            
-            # Move images to celebrity-specific folder
-            celebrity_dir = os.path.join("celebrity_images", celebrity)
-            if not os.path.exists(celebrity_dir):
-                os.makedirs(celebrity_dir)
-            
-            # Get the downloaded images and move them
-            for img in images:
-                if os.path.exists(img):
-                    filename = os.path.basename(img)
-                    new_path = os.path.join(celebrity_dir, filename)
-                    os.rename(img, new_path)
-            
+            response.download(arguments)
             print(f"Successfully downloaded images for {celebrity}")
             
         except Exception as e:
