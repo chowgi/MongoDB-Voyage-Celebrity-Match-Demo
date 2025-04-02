@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, jsonify
 import voyageai
 from PIL import Image
@@ -28,20 +27,20 @@ def search():
         if 'image' not in request.files:
             print("No image file in request")
             return jsonify({'error': 'No image uploaded'}), 400
-        
+
         image_file = request.files['image']
         print(f"Received image: {image_file.filename}")
-        
+
         image = Image.open(image_file)
         print("Successfully opened image")
-        
+
         # Get embedding for uploaded image
-        inputs = [[image]]
+        inputs = [["An image of a person", image]]
         print("Getting embedding...")
         result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
         query_embedding = result.embeddings[0]
-        print("Got embedding successfully")
-        
+        print(f"Embedding shape: {len(query_embedding)}")
+
         # Use MongoDB vector search
         pipeline = [
             {
@@ -61,21 +60,25 @@ def search():
                 }
             }
         ]
-        
+
+        # Verify collection has data
+        total_docs = collection.count_documents({})
+        print(f"Total documents in collection: {total_docs}")
+
         # Execute search and format results
         print("Executing MongoDB search...")
         results = list(collection.aggregate(pipeline))
         print(f"Found {len(results)} results")
-        
+
         top_3 = [{
             'name': doc['name'],
             'similarity': float(doc['similarity']),
             's3_url': doc['s3_url']
         } for doc in results]
-        
+
         print(f"Returning results: {top_3}")
         return jsonify(top_3)
-        
+
     except Exception as e:
         print(f"Error in search endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
