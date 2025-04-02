@@ -6,8 +6,18 @@ import boto3
 import io
 import os
 import numpy as np
+import base64
 
 app = Flask(__name__)
+
+def get_image_from_s3(bucket_name, key):
+    try:
+        response = s3_client.get_object(Bucket=bucket_name, Key=key)
+        image_data = response['Body'].read()
+        return base64.b64encode(image_data).decode('utf-8')
+    except Exception as e:
+        print(f"Error getting image from S3: {str(e)}")
+        return None
 
 # Initialize S3 client
 s3_client = boto3.client(
@@ -86,11 +96,16 @@ def search():
         results = list(collection.aggregate(pipeline))
         print(f"Found {len(results)} results")
 
-        top_3 = [{
-            'name': doc['name'],
-            'similarity': float(doc['similarity']),
-            's3_url': doc['s3_url']
-        } for doc in results]
+        top_3 = []
+        for doc in results:
+            image_key = f"{doc['name']}/image_1.jpg"
+            image_data = get_image_from_s3('celeb-images-demo', image_key)
+            if image_data:
+                top_3.append({
+                    'name': doc['name'],
+                    'similarity': float(doc['similarity']),
+                    'image_data': image_data
+                })
 
         print(f"Returning results: {top_3}")
         return jsonify(top_3)

@@ -49,7 +49,7 @@
                 const resultsDiv = document.getElementById('results');
                 resultsDiv.innerHTML = data.map(result => `
                     <div class="result-card">
-                        <img src="${result.s3_url}" alt="${result.name}">
+                        <img src="data:image/jpeg;base64,${result.image_data}" alt="${result.name}">
                         <h3>${result.name}</h3>
                         <p>Similarity: ${(result.similarity * 100).toFixed(2)}%</p>
                     </div>
