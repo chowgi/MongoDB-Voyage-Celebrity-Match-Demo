@@ -83,12 +83,107 @@
     <h1>Celebrity Image Search</h1>
     <div class="upload-container">
         <form id="searchForm">
-            <label for="imageInput" class="upload-btn">Choose Image</label>
-            <input type="file" id="imageInput" accept="image/*" required>
-            <button type="submit" class="upload-btn">Search</button>
+            <div class="camera-container" style="display: none;">
+                <video id="video" width="400" height="300" style="background: #333;" autoplay></video>
+                <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+            </div>
+            <div class="buttons">
+                <label for="imageInput" class="upload-btn">Choose File</label>
+                <input type="file" id="imageInput" accept="image/*" required>
+                <button type="button" class="upload-btn" id="cameraButton">Use Camera</button>
+                <button type="button" class="upload-btn" id="captureButton" style="display:none">Take Photo</button>
+                <button type="submit" class="upload-btn">Search</button>
+            </div>
         </form>
         <img id="preview" alt="Preview">
     </div>
+
+    <script>
+        let stream = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const cameraButton = document.getElementById('cameraButton');
+        const captureButton = document.getElementById('captureButton');
+        const cameraContainer = document.querySelector('.camera-container');
+        
+        cameraButton.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                cameraContainer.style.display = 'block';
+                captureButton.style.display = 'inline-block';
+                cameraButton.style.display = 'none';
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Could not access camera. Please make sure you have granted camera permissions.');
+            }
+        });
+
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg');
+            preview.src = imageData;
+            preview.style.display = 'block';
+            
+            // Stop camera stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            cameraContainer.style.display = 'none';
+            captureButton.style.display = 'none';
+            cameraButton.style.display = 'inline-block';
+            
+            // Convert base64 to blob for form submission
+            canvas.toBlob((blob) => {
+                const file = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('imageInput').files = dataTransfer.files;
+            }, 'image/jpeg');
+        });
+
+        document.getElementById('imageInput').addEventListener('change', event => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const imageFile = document.getElementById('imageInput').files[0];
+            formData.append('image', imageFile);
+
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                console.log('Search results:', data);
+                
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = data.map(result => `
+                    <div class="result-card">
+                        <img src="data:image/jpeg;base64,${result.image_data}" alt="${result.name}">
+                        <h3>${result.name}</h3>
+                        <p>Similarity: ${(result.similarity * 100).toFixed(2)}%</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during the search');
+            }
+        });
+    </script>
     <div id="results" class="results"></div>
 
     <script>
