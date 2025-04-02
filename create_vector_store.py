@@ -2,12 +2,11 @@
 import os
 import boto3
 from pymongo import MongoClient
-from voyageai import get_embedding
-import requests
-from io import BytesIO
+import voyageai
 from PIL import Image
+import io
 
-# Initialize S3 client
+# Initialize clients
 s3_client = boto3.client(
     's3',
     aws_access_key_id=os.environ['aws_access_key'],
@@ -16,48 +15,48 @@ s3_client = boto3.client(
 )
 bucket_name = 'celeb-images-demo'
 
+# Initialize Voyage client
+vo = voyageai.Client()  # Uses VOYAGE_API_KEY environment variable
+
 # Connect to MongoDB
 client = MongoClient(os.environ['MONGODB_URI'])
 db = client['celebrity_db']
 collection = db['celebrity_images']
 
 def get_image_from_s3(celebrity, image_key):
-    """Get image from S3 and return it as bytes"""
+    """Get image from S3 and return as PIL Image"""
     response = s3_client.get_object(Bucket=bucket_name, Key=f"{celebrity}/{image_key}")
-    image_data = response['Body'].read()
-    return image_data
+    image_bytes = response['Body'].read()
+    return Image.open(io.BytesIO(image_bytes))
 
 def process_celebrity_images():
     """Process all celebrity images and create vector embeddings"""
-    # List all objects in the S3 bucket
     paginator = s3_client.get_paginator('list_objects_v2')
     
     for page in paginator.paginate(Bucket=bucket_name, Delimiter='/'):
         for prefix in page.get('CommonPrefixes', []):
             celebrity_name = prefix.get('Prefix').rstrip('/')
             
-            # List all images for this celebrity
             celebrity_images = s3_client.list_objects_v2(
                 Bucket=bucket_name,
                 Prefix=prefix.get('Prefix')
             )
             
-            # Process each image
             image_data = []
             for item in celebrity_images.get('Contents', []):
                 image_key = item['Key'].split('/')[-1]
                 s3_url = f"https://{bucket_name}.s3.ap-south-1.amazonaws.com/{item['Key']}"
                 
                 try:
-                    # Get image from S3
-                    image_bytes = get_image_from_s3(celebrity_name, image_key)
+                    # Get image from S3 as PIL Image
+                    pil_image = get_image_from_s3(celebrity_name, image_key)
+                    
+                    # Create input for embedding
+                    inputs = [[f"An image of {celebrity_name}", pil_image]]
                     
                     # Get embedding using Voyage AI
-                    embedding = get_embedding(
-                        image_bytes,
-                        model="voyage-multimodal-3",
-                        api_key=os.environ['VOYAGE_API_KEY']
-                    )
+                    result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
+                    embedding = result.embeddings[0]
                     
                     image_data.append({
                         'image_key': image_key,
@@ -71,7 +70,6 @@ def process_celebrity_images():
                     print(f"Error processing {image_key} for {celebrity_name}: {str(e)}")
                     continue
             
-            # Create or update celebrity document
             if image_data:
                 collection.update_one(
                     {'name': celebrity_name},
