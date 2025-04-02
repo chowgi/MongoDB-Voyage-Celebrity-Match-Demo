@@ -73,35 +73,11 @@ def download_celebrity_images(celebrity_names, num_images=3):
             print(f"Error processing images for {celebrity}: {str(e)}")
 
 def main():
-    # List of 100 celebrities
-    celebrities = [
-        "Tom Hanks", "Jennifer Lawrence", "Leonardo DiCaprio", "Meryl Streep",
-        "Brad Pitt", "Angelina Jolie", "Morgan Freeman", "Julia Roberts",
-        "Robert Downey Jr", "Scarlett Johansson", "Will Smith", "Emma Stone",
-        "Johnny Depp", "Anne Hathaway", "Denzel Washington", "Sandra Bullock",
-        "Chris Hemsworth", "Natalie Portman", "Tom Cruise", "Nicole Kidman",
-        "Matt Damon", "Emma Watson", "George Clooney", "Charlize Theron",
-        "Ryan Reynolds", "Jennifer Aniston", "Hugh Jackman", "Kate Winslet",
-        "Chris Evans", "Margot Robbie", "Samuel L Jackson", "Cate Blanchett",
-        "Christian Bale", "Amy Adams", "Mark Wahlberg", "Jennifer Lopez",
-        "Benedict Cumberbatch", "Emily Blunt", "Dwayne Johnson", "Viola Davis",
-        "Jake Gyllenhaal", "Rachel McAdams", "Michael B Jordan", "Jessica Chastain",
-        "Chris Pratt", "Emma Thompson", "Idris Elba", "Zoe Saldana",
-        "Ryan Gosling", "Penelope Cruz", "Matthew McConaughey", "Kate Hudson",
-        "Daniel Craig", "Halle Berry", "Ben Affleck", "Michelle Williams",
-        "Russell Crowe", "Reese Witherspoon", "Colin Firth", "Marion Cotillard",
-        "Joaquin Phoenix", "Julianne Moore", "Michael Fassbender", "Naomi Watts",
-        "Eddie Redmayne", "Alicia Vikander", "Tom Hardy", "Saoirse Ronan",
-        "Jude Law", "Rachel Weisz", "Paul Rudd", "Eva Green",
-        "Liam Neeson", "Helena Bonham Carter", "Gary Oldman", "Rose Byrne",
-        "Oscar Isaac", "Kate Beckinsale", "Ralph Fiennes", "Emily VanCamp",
-        "Joseph Gordon-Levitt", "Diane Kruger", "Ethan Hawke", "Elizabeth Banks",
-        "Jeremy Renner", "Olivia Wilde", "Viggo Mortensen", "Gemma Arterton",
-        "Josh Brolin", "Rebecca Ferguson", "Joel Edgerton", "Rosamund Pike",
-        "Chiwetel Ejiofor", "Carey Mulligan", "Mahershala Ali", "Brie Larson",
-        "Sam Rockwell", "Tilda Swinton", "Daniel Kaluuya", "Lupita Nyong'o",
-        "Willem Dafoe", "Sally Hawkins", "Richard Madden", "Florence Pugh"
-    ]
+    # Load celebrities from CSV file
+    import csv
+    with open('names.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        celebrities = [row['Celebrity Name'] for row in reader]
 
     # Create temp directory if it doesn't exist
     if not os.path.exists("temp_images"):
