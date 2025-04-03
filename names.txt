@@ -910,5 +910,5 @@
   "Ted Williams",
   "Lou Gehrig",
   "Hank Aaron",
-  "Joe DiMaggio",
+  "Joe DiMaggio"
 ]
