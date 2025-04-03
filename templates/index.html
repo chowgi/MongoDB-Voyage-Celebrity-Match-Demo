@@ -214,9 +214,9 @@
         <img id="preview" alt="Preview">
     </div>
 
-    <div class="results-section">
+    <div class="results-section" style="display: none;" id="resultsSection">
         <h2>Your Celebrity Matches</h2>
-        <div id="results" class="results"></div>
+        <div id="results" class="results" style="margin: 0 auto;"></div>
     </div>
 
     <section class="how-it-works">
@@ -310,6 +310,8 @@
                 const data = await response.json();
                 console.log('Search results:', data);
                 
+                const resultsSection = document.getElementById('resultsSection');
+                resultsSection.style.display = 'block';
                 const resultsDiv = document.getElementById('results');
                 resultsDiv.innerHTML = data.map(result => `
                     <div class="result-card">
