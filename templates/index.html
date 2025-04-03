@@ -257,6 +257,12 @@
     <div class="results-section" style="display: none;" id="resultsSection">
         <h2>Your Top 3 Celebrity Matches</h2>
         <div id="results" class="results" style="margin: 0 auto;"></div>
+        <div class="explanation" style="max-width: 800px; margin: 40px auto 0; padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: left;">
+            <h3 style="color: #333; margin-bottom: 15px;">Why did I get these results?</h3>
+            <p style="color: #666; line-height: 1.6;">
+                Your image was converted into a vector embedding that captures its semantic and visual features. This embedding was compared to a database of about 1,000 celebrity embeddings. The system analyzes the entire image, not just specific features like faces, so results may sometimes reflect overall similarity in unexpected ways.
+            </p>
+        </div>
     </div>
 
     <div class="loading-modal" id="loadingModal">
