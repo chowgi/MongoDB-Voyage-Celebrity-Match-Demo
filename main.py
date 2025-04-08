@@ -3,9 +3,7 @@ import voyageai
 from PIL import Image
 from pymongo import MongoClient
 import requests
-import io
 import os
-import numpy as np
 import base64
 
 app = Flask(__name__)
@@ -41,7 +39,7 @@ def search():
         image = Image.open(image_file)
 
         # Get embedding for uploaded image
-        inputs = [["Focus on retrieving results that exhibit high similarity in facial geometry, proportions, and distinguishing features, such as jawline structure, cheekbone prominence, or the relative positioning of facial elements like eyes, nose, and mouth. Ignore things like backgrounds and clothing colours", image]]
+        inputs = [["Focus on facial geometry, proportions, and distinguishing features, such as jawline structure, cheekbone prominence, or the relative positioning of facial elements like eyes, nose, and mouth.", image]]
         result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
         query_embedding = result.embeddings[0]
 
@@ -83,4 +81,4 @@ def search():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', debug=True)
