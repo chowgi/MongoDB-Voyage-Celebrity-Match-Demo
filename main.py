@@ -81,6 +81,11 @@ def search():
         if cropped_face is None:
             return jsonify({'error': 'No face detected in the image'}), 400
             
+        # Convert cropped face to base64 for preview
+        buffered = io.BytesIO()
+        cropped_face.save(buffered, format="JPEG")
+        cropped_face_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+            
         # Use the cropped face for the search
         image = cropped_face
 
@@ -121,7 +126,10 @@ def search():
                     'image_data': image_data
                 })
 
-        return jsonify(top_3)
+        return jsonify({
+            'cropped_face': cropped_face_base64,
+            'matches': top_3
+        })
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
