@@ -341,8 +341,12 @@
         document.getElementById('imageInput').addEventListener('change', async event => {
             const file = event.target.files[0];
             if (file) {
-                // Skip preview of original image since we'll show the cropped face after processing
-                preview.style.display = 'none';
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
 
                 const formData = new FormData();
                 formData.append('image', file);
@@ -361,17 +365,11 @@
 
                 const data = await response.json();
                 console.log('Search results:', data);
-                
-                // Show the cropped face preview
-                if (data.cropped_face) {
-                    preview.src = `data:image/jpeg;base64,${data.cropped_face}`;
-                    preview.style.display = 'block';
-                }
 
                 const resultsSection = document.getElementById('resultsSection');
                 resultsSection.style.display = 'block';
                 const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = data.matches.map(result => `
+                resultsDiv.innerHTML = data.map(result => `
                     <div class="result-card">
                         <img src="data:image/jpeg;base64,${result.image_data}" alt="${result.name}">
                         <div class="info">
