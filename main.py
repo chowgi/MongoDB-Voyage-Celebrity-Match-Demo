@@ -44,7 +44,7 @@ def crop_face(image):
         
     # Get the first face with padding
     top, right, bottom, left = face_locations[0]
-    padding = 50
+    padding = 100
     
     # Add padding while keeping within image boundaries
     height, width = np_image.shape[:2]
