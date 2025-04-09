@@ -1,3 +1,4 @@
+
 import json
 import os
 from pymongo import MongoClient
@@ -36,8 +37,6 @@ def load_celebrity_data():
             # Insert only new documents
             result = collection.insert_many(new_celebrities)
             print(f"Successfully inserted {len(result.inserted_ids)} documents")
-
-
         except BulkWriteError as e:
             print(f"Error inserting documents: {e.details}")
         finally:
@@ -45,14 +44,12 @@ def load_celebrity_data():
     else:
         print("No new documents to insert")
 
-# Create vector search index if it doesn't exist
-index_exists = False
-for index in collection.list_indexes():
-    if index.get('name') == 'vector_index':
-        index_exists = True
-        break
-
 def create_index():
+    # Get MongoDB URI from environment variable
+    mongodb_uri = os.environ.get('MONGODB_URI')
+    if not mongodb_uri:
+        raise ValueError("Please set the MONGODB_URI environment variable")
+
     # Connect to MongoDB
     client = MongoClient(mongodb_uri)
     db = client['celebrity_db']
@@ -84,6 +81,8 @@ def create_index():
         )
         collection.create_search_index(search_model)
         print("Created vector search index")
+    else:
+        print("Vector search index already exists")
 
 if __name__ == "__main__":
     load_celebrity_data()
