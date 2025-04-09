@@ -5,45 +5,8 @@ from pymongo import MongoClient
 import requests
 import os
 import base64
-import face_recognition
-import numpy as np
 
 app = Flask(__name__)
-
-def crop_face(image_data, padding=50):
-    """
-    Crop the face from an image with padding
-    Args:
-        image_data: PIL Image or numpy array
-        padding: padding around the face in pixels
-    Returns:
-        PIL Image of the cropped face, or None if no face found
-    """
-    # Convert PIL Image to numpy array if needed
-    if isinstance(image_data, Image.Image):
-        image = np.array(image_data)
-    else:
-        image = image_data
-
-    # Detect face locations
-    face_locations = face_recognition.face_locations(image)
-    
-    if not face_locations:
-        return None
-        
-    # Use the first face found
-    top, right, bottom, left = face_locations[0]
-    
-    # Add padding while staying within image boundaries
-    height, width = image.shape[:2]
-    top = max(0, top - padding)
-    right = min(width, right + padding)
-    bottom = min(height, bottom + padding)
-    left = max(0, left - padding)
-    
-    # Crop the face
-    face_image = image[top:bottom, left:right]
-    return Image.fromarray(face_image)
 
 def get_image_from_s3(bucket_name, key):
     try:
@@ -74,15 +37,6 @@ def search():
 
         image_file = request.files['image']
         image = Image.open(image_file)
-        
-        # Crop face from the image
-        cropped_face = crop_face(image)
-        
-        if cropped_face is None:
-            return jsonify({'error': 'No face detected in the image'}), 400
-            
-        # Use the cropped face for the search
-        image = cropped_face
 
         # Get embedding for uploaded image
         inputs = [["Focus on facial geometry, proportions, and distinguishing features, such as jawline structure, cheekbone prominence, or the relative positioning of facial elements like eyes, nose, and mouth.", image]]
