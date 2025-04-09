@@ -78,14 +78,12 @@
         }
 
         #preview {
-            width: 300px; /* Modified max-width */
-            height:300px;
+            max-width: 100%;
             margin: 40px auto;
             display: none;
             background: white;
-            padding: 20px 20px 50px 20px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transform: rotate(-2deg);
             border: 1px solid #f0f0f0;
         }
 
@@ -371,11 +369,8 @@
                 const data = await response.json();
                 console.log('Search results:', data);
 
-                // Update preview with cropped face
-                if (data.cropped_face) {
-                    preview.src = `data:image/jpeg;base64,${data.cropped_face}`;
-                    preview.style.display = 'block';
-                }
+                // Keep showing the original uploaded image
+                preview.style.display = 'block';
 
                 const resultsSection = document.getElementById('resultsSection');
                 resultsSection.style.display = 'block';
