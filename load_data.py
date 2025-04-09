@@ -65,7 +65,6 @@ def create_index():
     if not index_exists:
         search_model = SearchIndexModel(
             definition={
-                "mappings": {
                     "fields": [
                         {
                             "type": "vector",
@@ -74,8 +73,7 @@ def create_index():
                             "similarity": "cosine",
                         }
                     ],
-                }
-            },
+                },
             name="vector_index",
             type="vectorSearch",
         )
