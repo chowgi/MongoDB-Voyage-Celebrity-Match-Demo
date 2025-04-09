@@ -3,6 +3,7 @@ import json
 import os
 from pymongo import MongoClient
 from pymongo.errors import BulkWriteError
+from bson import json_util, ObjectId
 
 def load_celebrity_data():
     # Get MongoDB URI from environment variable
@@ -15,9 +16,15 @@ def load_celebrity_data():
     db = client['celebrity_db']
     collection = db['celebrity_images']
 
-    # Read JSON data
+    # Read JSON data using json_util to properly handle MongoDB extended JSON
     with open('celebrity_images.json', 'r') as f:
-        celebrities = json.load(f)
+        celebrities = json_util.loads(f.read())
+
+    # Clean the documents to ensure proper ObjectId handling
+    for celebrity in celebrities:
+        if '_id' in celebrity and isinstance(celebrity['_id'], dict):
+            if '$oid' in celebrity['_id']:
+                celebrity['_id'] = ObjectId(celebrity['_id']['$oid'])
 
     try:
         # Insert the data
