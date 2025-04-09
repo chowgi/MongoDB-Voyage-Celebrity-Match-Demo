@@ -39,7 +39,7 @@ def search():
         image = Image.open(image_file)
 
         # Get embedding for uploaded image
-        inputs = [["Focus on facial geometry, proportions, and distinguishing features, such as jawline structure, cheekbone prominence, or the relative positioning of facial elements like eyes, nose, and mouth.", image]]
+        inputs = [["Focus on rfacial geometry, proportions, and distinguishing features, such as jawline structure, cheekbone prominence, or the relative positioning of facial elements like eyes, nose, and mouth. ", image]]
         result = vo.multimodal_embed(inputs, model="voyage-multimodal-3")
         query_embedding = result.embeddings[0]
 

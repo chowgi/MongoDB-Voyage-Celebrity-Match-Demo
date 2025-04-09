@@ -9,7 +9,7 @@ image = face_recognition.load_image_file(image_path)
 face_locations = face_recognition.face_locations(image)
 
 # Define padding (in pixels)
-padding = 50  # Adjust this value to increase/decrease padding
+padding = 200  # Adjust this value to increase/decrease padding
 
 # Loop through each detected face
 for i, (top, right, bottom, left) in enumerate(face_locations):
