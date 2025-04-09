@@ -1,3 +1,4 @@
+
 import json
 import os
 from pymongo import MongoClient
@@ -20,49 +21,47 @@ def load_celebrity_data():
     with open('celebrity_images.json', 'r') as f:
         celebrities = json_util.loads(f.read())
 
-    # Clean the documents to ensure proper ObjectId handling
+    # Remove _id field to let MongoDB auto-generate it and check for existing documents
+    new_celebrities = []
     for celebrity in celebrities:
-        if '_id' in celebrity and isinstance(celebrity['_id'], dict):
-            if '$oid' in celebrity['_id']:
-                celebrity['_id'] = ObjectId(celebrity['_id']['$oid'])
+        # Check if document already exists
+        if not collection.find_one({"name": celebrity.get("name")}):
+            if '_id' in celebrity:
+                del celebrity['_id']
+            new_celebrities.append(celebrity)
+        else:
+            print(f"Skipping {celebrity.get('name')} - Document already exists")
 
-    try:
-        # Insert the data
-        result = collection.insert_many(celebrities)
-        print(f"Successfully inserted {len(result.inserted_ids)} documents")
+    if new_celebrities:
+        try:
+            # Insert only new documents
+            result = collection.insert_many(new_celebrities)
+            print(f"Successfully inserted {len(result.inserted_ids)} documents")
 
-        # Check for existing vector search index
-        index_exists = False
-        for index in collection.list_search_indexes():  # Use list_search_indexes() instead of list_indexes()
-            if index.get('name') == 'vector_index':
-                index_exists = True
-                break
+            # Create vector search index if it doesn't exist
+            index_exists = False
+            for index in collection.list_indexes():
+                if index.get('name') == 'vector_index':
+                    index_exists = True
+                    break
 
-        # Create index if not exists
-        
-        if not index_exists:
-            search_model = SearchIndexModel(
-                definition={
-                    "mappings": {
-                        "fields": [
-                            {
-                                "type": "vector",
-                                "path": "embeddings",
-                                "numDimensions": 1024,
-                                "similarity": "cosine",
-                            }
-                        ],
+            if not index_exists:
+                collection.create_index(
+                    [("embedding", "vector")],
+                    {
+                        "name": "vector_index",
+                        "numDimensions": 1024,
+                        "similarityMetric": "cosine"
                     }
-                },
-                name="vector_index",
-                type="vectorSearch",
-            )
-            collection.create_search_index(search_model)
+                )
+                print("Created vector search index")
 
-    except BulkWriteError as e:
-        print(f"Error inserting documents: {e.details}")
-    finally:
-        client.close()
+        except BulkWriteError as e:
+            print(f"Error inserting documents: {e.details}")
+        finally:
+            client.close()
+    else:
+        print("No new documents to insert")
 
 if __name__ == "__main__":
     load_celebrity_data()
