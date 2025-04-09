@@ -1,12 +1,12 @@
 
 # Celebrity Look-Alike Finder
 
-An AI-powered web application that finds celebrity look-alikes using facial recognition and vector similarity search.
+Celebrity look-alikes demo application that showcases MongoDB Atlas Vector Search and Voyage AI multimodal embeddings. This is only a tech demo so results may vary. 
 
 ## Try it Live!
 
 You can try the app directly on Replit here:
-[Insert Replit Link]
+[https://replit.com/@BenKarciauskas/MongoDB-Avoyage-Celebrity-Match-Demo#README.md]
 
 ## Features
 
@@ -17,6 +17,7 @@ You can try the app directly on Replit here:
 
 ## Tech Stack
 
+- Replit (hosting and dependancies)
 - Flask (Python web framework)
 - MongoDB Atlas (Vector database)
 - VoyageAI (Vector embeddings)
