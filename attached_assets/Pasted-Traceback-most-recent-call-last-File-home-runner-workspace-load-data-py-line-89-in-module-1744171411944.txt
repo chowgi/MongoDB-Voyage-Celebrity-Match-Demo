@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/home/runner/workspace/load_data.py", line 89, in <module>
+    create_index()
+  File "/home/runner/workspace/load_data.py", line 82, in create_index
+    collection.create_search_index(search_model)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/synchronous/collection.py", line 2692, in create_search_index
+    return (self._create_search_indexes([model], session, comment, **kwargs))[0]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/synchronous/collection.py", line 2740, in _create_search_indexes
+    resp = self._command(
+           ^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/synchronous/collection.py", line 621, in _command
+    return conn.command(
+           ^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/synchronous/helpers.py", line 47, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/synchronous/pool.py", line 536, in command
+    return command(
+           ^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/synchronous/network.py", line 213, in command
+    helpers_shared._check_command_response(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/pymongo/helpers_shared.py", line 247, in _check_command_response
+    raise OperationFailure(errmsg, code, response, max_wire_version)
+pymongo.errors.OperationFailure: Attribute fields missing., full error: {'ok': 0.0, 'errmsg': 'Attribute fields missing.', 'code': 2, 'codeName': 'BadValue', '$clusterTime': {'clusterTime': Timestamp(1744171386, 1), 'signature': {'hash': b'U\xefQ=|2\xc4\xa1Q\xbc\xec8$%\x84\xa9\xb4y\nO', 'keyId': 7468393806379876357}}, 'operationTime': Timestamp(1744171386, 1)}
