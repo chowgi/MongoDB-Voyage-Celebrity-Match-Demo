@@ -20,11 +20,10 @@ def load_celebrity_data():
     with open('celebrity_images.json', 'r') as f:
         celebrities = json_util.loads(f.read())
 
-    # Clean the documents to ensure proper ObjectId handling
+    # Remove _id field to let MongoDB auto-generate it
     for celebrity in celebrities:
-        if '_id' in celebrity and isinstance(celebrity['_id'], dict):
-            if '$oid' in celebrity['_id']:
-                celebrity['_id'] = ObjectId(celebrity['_id']['$oid'])
+        if '_id' in celebrity:
+            del celebrity['_id']
 
     try:
         # Insert the data
