@@ -29,6 +29,7 @@ You can try the app directly on Replit here:
 1. Create a MongoDB Atlas account and get your connection string
 2. Set up environment variables in Replit:
    - `MONGODB_URI`: Your MongoDB Atlas connection string
+   - `VOYAGE_API_KEY`: Your Voyage AI API key for creating image embeddings
 
 3. Install dependencies (automatically handled by Replit)
 
