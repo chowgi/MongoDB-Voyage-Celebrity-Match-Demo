@@ -78,8 +78,7 @@
         }
 
         #preview {
-            width: 800px;
-            height: 800px;
+            max-width: 400px;
             margin: 40px auto;
             display: none;
             background: white;
@@ -87,7 +86,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transform: rotate(-2deg);
             border: 1px solid #f0f0f0;
-            object-fit: cover;
         }
 
         .upload-btn {
@@ -275,7 +273,7 @@
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <p>Processing your photo...</p>
-            <p style="font-size: 0.9em; color: #666;">Cropping image, creating vectors and searching for your celebrity matches</p>
+            <p style="font-size: 0.9em; color: #666;">Creating vectors and searching for matches.</p>
         </div>
     </div>
 
