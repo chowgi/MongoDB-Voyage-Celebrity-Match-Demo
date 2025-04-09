@@ -56,32 +56,33 @@ def create_index():
     collection = db['celebrity_images']
 
     # Create vector search index if it doesn't exist
-    index_exists = False
-    for index in collection.list_indexes():
-        if index.get('name') == 'vector_index':
-            index_exists = True
-            print("Vector search index already exists")
-            break
-    
-    if not index_exists:
-        search_model = SearchIndexModel(
-            definition={
-                    "fields": [
-                        {
-                            "type": "vector",
-                            "path": "embedding",
-                            "numDimensions": 1024,
-                            "similarity": "cosine",
+    try:
+        # List all search indexes
+        existing_indexes = collection.list_search_indexes()
+        index_exists = any(index['name'] == 'vector_index' for index in existing_indexes)
+        
+        if not index_exists:
+            search_model = SearchIndexModel(
+                {
+                    "mappings": {
+                        "dynamic": True,
+                        "fields": {
+                            "embedding": {
+                                "dimensions": 1024,
+                                "similarity": "cosine",
+                                "type": "knnVector"
+                            }
                         }
-                    ],
+                    }
                 },
-            name="vector_index",
-            type="vectorSearch",
-        )
-        collection.create_search_index(search_model)
-        print("Created vector search index")
-    else:
-        print("Vector search index already exists")
+                name="vector_index"
+            )
+            collection.create_search_index(search_model)
+            print("Created vector search index")
+        else:
+            print("Vector search index already exists")
+    except Exception as e:
+        print(f"Error managing search index: {str(e)}")
 
 if __name__ == "__main__":
     load_celebrity_data()
