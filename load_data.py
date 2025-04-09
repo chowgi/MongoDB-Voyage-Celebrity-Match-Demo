@@ -1,4 +1,3 @@
-
 import json
 import os
 from pymongo import MongoClient
@@ -30,16 +29,22 @@ def load_celebrity_data():
         # Insert the data
         result = collection.insert_many(celebrities)
         print(f"Successfully inserted {len(result.inserted_ids)} documents")
-        
+
         # Create vector search index if it doesn't exist
-        if "vector_index" not in collection.list_indexes():
+        index_exists = False
+        for index in collection.list_indexes():
+            if index.get('name') == 'vector_index':
+                index_exists = True
+                break
+
+        if not index_exists:
             collection.create_index(
                 [("embedding", "vectorSearch")],
-                {
+                name="vector_index",
+                vectorSearchOptions={
                     "numDimensions": 1024,
                     "similarity": "cosine"
-                },
-                name="vector_index"
+                }
             )
             print("Created vector search index")
 
