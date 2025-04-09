@@ -44,24 +44,25 @@ def load_celebrity_data():
                     index_exists = True
                     break
 
-    if not index_exists:
-        search_model = SearchIndexModel(
-            definition={
-                "mappings": {
-                    "fields": [
-                        {
-                            "type": "vector",
-                            "path": "embeddings",
-                            "numDimensions": 1024,
-                            "similarity": "cosine",
+            if not index_exists:
+                search_model = SearchIndexModel(
+                    definition={
+                        "mappings": {
+                            "fields": [
+                                {
+                                    "type": "vector",
+                                    "path": "embedding",
+                                    "numDimensions": 1024,
+                                    "similarity": "cosine",
+                                }
+                            ],
                         }
-                    ],
-                }
-            },
-            name="vector_index",
-            type="vectorSearch",
-        )
-        collection.create_search_index(search_model)
+                    },
+                    name="vector_index",
+                    type="vectorSearch",
+                )
+                collection.create_search_index(search_model)
+                print("Created vector search index")
 
         except BulkWriteError as e:
             print(f"Error inserting documents: {e.details}")
