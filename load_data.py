@@ -1,3 +1,4 @@
+
 import json
 import os
 from pymongo import MongoClient
@@ -30,32 +31,23 @@ def load_celebrity_data():
         result = collection.insert_many(celebrities)
         print(f"Successfully inserted {len(result.inserted_ids)} documents")
 
-    # Check for existing vector search index
-    index_exists = False
-    for index in collection.list_search_indexes():  # Use list_search_indexes() instead of list_indexes()
-        if index.get('name') == 'vector_index':
-            index_exists = True
-            break
+        # Create vector search index if it doesn't exist
+        index_exists = False
+        for index in collection.list_indexes():
+            if index.get('name') == 'vector_index':
+                index_exists = True
+                break
 
-    # Create index if not exists
-    if not index_exists:
-        collection.create_search_index(
-            name='vector_index',
-            definition={
-                'mappings': {
-                    'dynamic': True,
-                    'fields': {
-                        'embedding': {
-                            'type': 'vector',
-                            'dimensions': 1024,
-                            'similarity': 'cosine'
-                        }
-                    }
+        if not index_exists:
+            collection.create_index(
+                [("embedding", "vector")],
+                {
+                    "name": "vector_index",
+                    "numDimensions": 1024,
+                    "similarityMetric": "cosine"
                 }
-            }
-        )
-        print("Created vector search index")
-
+            )
+            print("Created vector search index")
 
     except BulkWriteError as e:
         print(f"Error inserting documents: {e.details}")
