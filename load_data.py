@@ -60,6 +60,7 @@ def create_index():
     for index in collection.list_indexes():
         if index.get('name') == 'vector_index':
             index_exists = True
+            print("Vector search index already exists")
             break
     
     if not index_exists:
