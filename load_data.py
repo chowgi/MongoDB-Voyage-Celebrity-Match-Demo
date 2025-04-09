@@ -1,4 +1,3 @@
-
 import json
 import os
 from pymongo import MongoClient
@@ -45,16 +44,24 @@ def load_celebrity_data():
                     index_exists = True
                     break
 
-            if not index_exists:
-                collection.create_index(
-                    [("embedding", "vector")],
-                    {
-                        "name": "vector_index",
-                        "numDimensions": 1024,
-                        "similarityMetric": "cosine"
-                    }
-                )
-                print("Created vector search index")
+    if not index_exists:
+        search_model = SearchIndexModel(
+            definition={
+                "mappings": {
+                    "fields": [
+                        {
+                            "type": "vector",
+                            "path": "embeddings",
+                            "numDimensions": 1024,
+                            "similarity": "cosine",
+                        }
+                    ],
+                }
+            },
+            name="vector_index",
+            type="vectorSearch",
+        )
+        collection.create_search_index(search_model)
 
         except BulkWriteError as e:
             print(f"Error inserting documents: {e.details}")
