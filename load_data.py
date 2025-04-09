@@ -37,32 +37,6 @@ def load_celebrity_data():
             result = collection.insert_many(new_celebrities)
             print(f"Successfully inserted {len(result.inserted_ids)} documents")
 
-            # Create vector search index if it doesn't exist
-            index_exists = False
-            for index in collection.list_indexes():
-                if index.get('name') == 'vector_index':
-                    index_exists = True
-                    break
-
-            if not index_exists:
-                search_model = SearchIndexModel(
-                    definition={
-                        "mappings": {
-                            "fields": [
-                                {
-                                    "type": "vector",
-                                    "path": "embedding",
-                                    "numDimensions": 1024,
-                                    "similarity": "cosine",
-                                }
-                            ],
-                        }
-                    },
-                    name="vector_index",
-                    type="vectorSearch",
-                )
-                collection.create_search_index(search_model)
-                print("Created vector search index")
 
         except BulkWriteError as e:
             print(f"Error inserting documents: {e.details}")
@@ -71,5 +45,46 @@ def load_celebrity_data():
     else:
         print("No new documents to insert")
 
+# Create vector search index if it doesn't exist
+index_exists = False
+for index in collection.list_indexes():
+    if index.get('name') == 'vector_index':
+        index_exists = True
+        break
+
+def create_index():
+    # Connect to MongoDB
+    client = MongoClient(mongodb_uri)
+    db = client['celebrity_db']
+    collection = db['celebrity_images']
+
+    # Create vector search index if it doesn't exist
+    index_exists = False
+    for index in collection.list_indexes():
+        if index.get('name') == 'vector_index':
+            index_exists = True
+            break
+    
+    if not index_exists:
+        search_model = SearchIndexModel(
+            definition={
+                "mappings": {
+                    "fields": [
+                        {
+                            "type": "vector",
+                            "path": "embedding",
+                            "numDimensions": 1024,
+                            "similarity": "cosine",
+                        }
+                    ],
+                }
+            },
+            name="vector_index",
+            type="vectorSearch",
+        )
+        collection.create_search_index(search_model)
+        print("Created vector search index")
+
 if __name__ == "__main__":
     load_celebrity_data()
+    create_index()
