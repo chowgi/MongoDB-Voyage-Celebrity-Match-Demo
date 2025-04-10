@@ -63,19 +63,18 @@ def create_index():
         
         if not index_exists:
             search_model = SearchIndexModel(
-                {
-                    "mappings": {
-                        "dynamic": True,
-                        "fields": {
-                            "embedding": {
-                                "dimensions": 1024,
-                                "similarity": "cosine",
-                                "type": "knnVector"
-                            }
-                        }
+                definition={
+                  "fields": [
+                    {
+                      "numDimensions": 1024,
+                      "path": "embedding",
+                      "similarity": "cosine",
+                      "type": "vector"
                     }
+                  ]
                 },
-                name="vector_index"
+                name="vector_index",
+                type="vectorSearch"
             )
             collection.create_search_index(search_model)
             print("Created vector search index")
